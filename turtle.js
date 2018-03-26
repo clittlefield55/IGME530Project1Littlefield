@@ -6,14 +6,14 @@ const Turtle = class {
       this.ctx =  canvas.getContext('2d');
       this.weight = 1;
       this.color = 'black';
-      this.pos = Vec2( startX, startY );
+      this.startX = startX;
+      this.startY = startY;
+      this.pos = Vec2( this.startX, this.startY );
       this.dir = Vec2( 0,-1 );
       this.pen =  1;
       this.posArray = [];
       this.dirArray = [];
       this.ctx.moveTo( this.pos.x, this.pos.y )
-      this.ctx.fillStyle = 'black'
-      this.ctx.fillRect(0,0,this.canvas.width,this.canvas.height)
   };
     
   penUp()   { this.pen = 0 };
@@ -51,4 +51,8 @@ const Turtle = class {
       this.moveTo( this.pos.x, this.pos.y )
     }
   };
+  reset(){
+      this.pos = Vec2( this.startX, this.startY );
+      this.dir = Vec2( 0,-1 );
+  }
 }
