@@ -48,7 +48,9 @@ const Turtle = class {
       this.ctx.stroke()
       this.ctx.closePath()
     }else{
-      this.moveTo( this.pos.x, this.pos.y )
+      this.pos.x += this.dir.x * amt
+      this.pos.y += this.dir.y * amt
+      this.ctx.moveTo( this.pos.x, this.pos.y )
     }
   };
   reset(){
