@@ -9,6 +9,9 @@
     axiom: 'F',
     times: 5,
     maxTimes: 5,
+    animIndex: 0,
+    animating: false,
+    commands: '',
     functions: null,
     rulesForm: null,
     button: null,
@@ -41,14 +44,24 @@
         
         this.rulesForm = document.getElementById('rulesField');
         this.button = document.getElementById('updateButton');
+        this.animButton = document.getElementById('animButton');
         this.slider = document.getElementById('repeats');
         this.select = document.getElementById('preset');
         
         this.button.addEventListener('click', function(){
+            if(app.animating){
+                app.animating = false;
+                app.animIndex = 0;
+                app.turtle.reset();
+            }
             if(app.rulesForm.value != ''){
-            app.rules['F'] = app.rulesForm.value;
-            app.runTurtle();
-        }
+                app.rules['F'] = app.rulesForm.value;
+                app.runTurtle();
+            }
+        });
+        this.animButton.addEventListener('click', function(){
+            app.animating = true;
+            requestAnimationFrame(app.animateTurtle);
         });
         this.slider.addEventListener('change', this.updateTimes);
         this.select.addEventListener('change', this.updateRules);
@@ -63,6 +76,11 @@
     },
       
     updateRules() {
+        if(app.animating){
+            app.animating = false;
+            app.animIndex = 0;
+            app.turtle.reset();
+        }
         app.rules['F'] = app.select.value;
         app.rulesForm.value = app.select.value;
         app.runTurtle();
@@ -77,10 +95,10 @@
         app.turtle.reset();
         this.ctx.fillStyle = 'black';
         this.ctx.fillRect(0,0,this.canvas.width,this.canvas.height);
-        var commands = this.axiom;
+        this.commands = this.axiom;
         for(var i=0; i<this.times; i++){
             var newLine = '';
-            for(var c of commands){
+            for(var c of this.commands){
                 if(this.rules[c]){
                     newLine += this.rules[c];        
                 }
@@ -88,13 +106,32 @@
                     newLine += c;
                 }
             }
-            commands = newLine;
+            this.commands = newLine;
         }
         
-        for(var char of commands){
+        for(var char of this.commands){
             this.functions[char]();
         }
 
+    },
+      
+    animateTurtle() {
+        if(app.animating){
+            if(app.animIndex == 0){
+              app.ctx.fillStyle = 'black';
+              app.ctx.fillRect(0,0,app.canvas.width,app.canvas.height);
+            }
+            if(app.animIndex < app.commands.length){
+              requestAnimationFrame(app.animateTurtle);  
+            }
+              app.functions[app.commands[app.animIndex]]();
+              app.animIndex++;   
+
+            if(app.animIndex == app.commands.length - 1){
+                app.animIndex = 0;
+                app.animating = false;
+            }
+        }
     },
       
     map(oldMin, oldMax, newMin, newMax, scaledValue){
